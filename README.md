@@ -27,6 +27,3 @@ The goal behind this project is to enhance urban connectivity and safety, using 
 ## Feedback
 I’m excited to keep improving this project and would love to hear your thoughts! Please feel free to share feedback or suggestions.
 DM:- www.linkedin.com/in/venukamatchi-p
-
-## License
-This project is licensed under the [MIT License](LICENSE).
