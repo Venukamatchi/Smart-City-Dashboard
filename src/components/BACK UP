@@ -1,0 +1,654 @@
+////weather
+
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+
+const Weather = () => {
+  const [weather, setWeather] = useState(null);
+  const [isDaytime, setIsDaytime] = useState(null);
+  const [songRecommendations, setSongRecommendations] = useState([]);
+  const [spotifyTrackIds, setSpotifyTrackIds] = useState([]);
+  const [selectedSongIndex, setSelectedSongIndex] = useState(null);
+  const [loadingSpotify, setLoadingSpotify] = useState(false);
+  const API_KEY = '34d531b0d791b6475ab886c9ce9eae2e';
+  const city = 'chennai';
+
+  useEffect(() => {
+    const fetchWeather = async () => {
+      try {
+        const response = await axios.get(
+          `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`
+        );
+        const data = response.data;
+        setWeather(data);
+
+        const currentTime = Date.now() / 1000;
+        const isDay = currentTime > data.sys.sunrise && currentTime < data.sys.sunset;
+        setIsDaytime(isDay);
+
+        const recommendations = getSongRecommendations(data.weather[0].description, isDay);
+        setSongRecommendations(recommendations);
+        setSpotifyTrackIds(recommendations.map(getSpotifyTrackId));
+      } catch (error) {
+        console.error('Error fetching the weather data', error);
+      }
+    };
+
+    fetchWeather();
+  }, []);
+
+  const getSongRecommendations = (weatherDescription, isDaytime) => {
+    const songs = {
+      day: {
+        clear: [
+          "Here Comes the Sun - The Beatles",
+          "Good Day Sunshine - The Beatles",
+          "Walking on Sunshine - Katrina and the Waves",
+          "Pocketful of Sunshine - Natasha Bedingfield",
+          "Lovely Day - Bill Withers",
+          "Ain't No Mountain High Enough - Marvin Gaye & Tammi Terrell",
+          "Best Day of My Life - American Authors",
+          "Happy - Pharrell Williams",
+          "Send Me On My Way - Rusted Root",
+          "Count on Me - Bruno Mars",
+        ],
+        rain: [
+          "Umbrella - Rihanna",
+          "Set Fire to the Rain - Adele",
+          "Rain on Me - Lady Gaga & Ariana Grande",
+          "Have You Ever Seen the Rain? - Creedence Clearwater Revival",
+          "I Love a Rainy Night - Eddie Rabbitt",
+          "Rain - The Beatles",
+          "November Rain - Guns N' Roses",
+          "Banana Pancakes - Jack Johnson",
+          "It's Raining Men - The Weather Girls",
+          "Chasing Cars - Snow Patrol",
+        ],
+        clouds: [
+          "Clouds - Imagine Dragons",
+          "Under the Clouds - The Strokes",
+          "Breathe - Pink Floyd",
+          "Cloud Nine - The Temptations",
+          "Both Sides Now - Joni Mitchell",
+          "Cloudy Day - Lykke Li",
+          "Gray - The Movement",
+          "Cool for the Summer - Demi Lovato",
+          "Ain't Nobody - Chaka Khan",
+          "Goodbye Yellow Brick Road - Elton John",
+        ],
+      },
+      night: {
+        clear: [
+          "Blinding Lights - The Weeknd",
+          "Stay - The Kid LAROI & Justin Bieber",
+          "Night Changes - One Direction",
+          "Can't Help Falling in Love - Elvis Presley",
+          "Dancing in the Moonlight - Toploader",
+          "Nocturne - Yuna",
+          "Electric Feel - MGMT",
+          "New York State of Mind - Billy Joel",
+          "Perfect - Ed Sheeran",
+          "Shivers - Ed Sheeran",
+        ],
+        rain: [
+          "Set Fire to the Rain - Adele",
+          "Have You Ever Seen the Rain? - Creedence Clearwater Revival",
+          "Raindrops Keep Fallin' on My Head - B.J. Thomas",
+          "Riders on the Storm - The Doors",
+          "Rain - SWV",
+          "Kiss the Rain - Billie Myers",
+          "Stormy - Classics IV",
+          "Come Rain or Come Shine - Ray Charles",
+          "I Can't Stand the Rain - Ann Peebles",
+          "Purple Rain - Prince",
+        ],
+        clouds: [
+          "Under the Milky Way - The Church",
+          "Blackbird - The Beatles",
+          "Dust in the Wind - Kansas",
+          "Ain't No Sunshine - Bill Withers",
+          "Someone Like You - Adele",
+          "Creep - Radiohead",
+          "Hallelujah - Jeff Buckley",
+          "Mad World - Gary Jules",
+          "Everybody Hurts - R.E.M.",
+          "Breathe Me - Sia",
+        ],
+      },
+    };
+
+    const timeOfDay = isDaytime ? 'day' : 'night';
+
+    if (weatherDescription.includes('clear')) return songs[timeOfDay].clear;
+    if (weatherDescription.includes('rain')) return songs[timeOfDay].rain;
+    if (weatherDescription.includes('cloud')) return songs[timeOfDay].clouds;
+
+    return ["Walking on Sunshine - Katrina and the Waves"];
+  };
+
+  const getSpotifyTrackId = (song) => {
+    const songMapping = {
+"Here Comes the Sun - The Beatles": "6dGnYIeXmHdcikdzNNDMm2",
+      "Good Day Sunshine - The Beatles": "1zIlC9G1Dg5b9nXtHkbiPl",
+      "Walking on Sunshine - Katrina and the Waves": "1bNW7M8WIG7fRnmJpLGtbb",
+      "Pocketful of Sunshine - Natasha Bedingfield": "0nT5LyUj8Dg3v3x8GOV7T4",
+      "Lovely Day - Bill Withers": "3fXQclQfSzyUqf3KSMK4yN",
+      "Ain't No Mountain High Enough - Marvin Gaye & Tammi Terrell": "5D9G4xVubK4XedX7T7G5U9",
+      "Best Day of My Life - American Authors": "3M31r8FqL0aK4vKStCeq58",
+      "Happy - Pharrell Williams": "6HQZ5hU0ZZ8Y2XJ0UCRF7d",
+      "Send Me On My Way - Rusted Root": "5tJw5H0oEx1mG1LHzG4g5d",
+      "Count on Me - Bruno Mars": "6Y4k4Mif9ZGR1xZlDBK6cn",
+      "Umbrella - Rihanna": "2yGgUys7PZ0rNqVtH7FjbF",
+      "Set Fire to the Rain - Adele": "4z1m49K3Hq3sK1gGpT8kVR",
+      "Rain on Me - Lady Gaga & Ariana Grande": "6N4jK3kLsX0EG8O8rD9x9n",
+      "Have You Ever Seen the Rain? - Creedence Clearwater Revival": "2a9X4lW1psT9jMR0DkFzAo",
+      "I Love a Rainy Night - Eddie Rabbitt": "0zvNHIL7ci0ZzIoWU6RO2u",
+      "Rain - The Beatles": "2F3Wf8M3pHzSldzY3QwKoi",
+      "November Rain - Guns N' Roses": "7y5Dg6w1Z5X8YHUiwzV8Sk",
+      "Banana Pancakes - Jack Johnson": "4n8g6U1KX26sD5Z1Fbg5Z4",
+      "It's Raining Men - The Weather Girls": "0GwnCLtgIWd5rghDcloU4K",
+      "Chasing Cars - Snow Patrol": "7aLP8Jwl9V8izQ3HYbX7K1",
+      "Clouds - Imagine Dragons": "7d8b8Pe3m1sfo4y9eC5u0M",
+      "Under the Clouds - The Strokes": "4wG5v4Rb3KIDB7LVj8fHjx",
+      "Breathe - Pink Floyd": "0RQR9tN9ipnB2YtxJ3Um7D",
+      "Cloud Nine - The Temptations": "3KPeX8ay2g56aOQhN5qlHT",
+      "Both Sides Now - Joni Mitchell": "6hR7r3Cn23Rm3kZ4Zb1N97",
+      "Cloudy Day - Lykke Li": "2bbzPZxkBY1L36FlqY3Z7c",
+      "Gray - The Movement": "2jMNUZxl3h6lFmYVnWsn8R",
+      "Cool for the Summer - Demi Lovato": "3uwnnTQcHM1rDqSfA4gQNz",
+      "Ain't Nobody - Chaka Khan": "4iZcH6rLxRo0afDg5fbMw9",
+      "Goodbye Yellow Brick Road - Elton John": "4na6kGbBFLVZqY0b7fhnn0",
+      "Blinding Lights - The Weeknd": "0Vn5EBU0dOmkQ3Vka6ZsZK",
+      "Stay - The Kid LAROI & Justin Bieber": "4dNBcRS9YqR1ZHi8IDt9IU",
+      "Night Changes - One Direction": "2vAVl7mpbGxNeZmBbi4gAn",
+      "Can't Help Falling in Love - Elvis Presley": "5C9eB1nuyc44DQfmyngl68",
+      "Dancing in the Moonlight - Toploader": "1nHBwcozJvOIKXJs46GHA8",
+      "Nocturne - Yuna": "6m9MEViHj1FVp2B6M4DJVL",
+      "Electric Feel - MGMT": "4Z4OkFw8G6Shw8Z8pZeyvT",
+      "New York State of Mind - Billy Joel": "6yjKlmm7vOszkXEUku1EM1",
+      "Perfect - Ed Sheeran": "0N2iH82Zq5JvJlBC2s7kR8",
+      "Shivers - Ed Sheeran": "4c5wD2WlqU4D4tN1w7Eo5U",
+      "Raindrops Keep Fallin' on My Head - B.J. Thomas": "2M7QsYbDhsM1cZW8KMeNoN",
+      "Riders on the Storm - The Doors": "5SAYWcgnn0CThHXi1s23gM",
+      "Rain - SWV": "4dXldw8mc8Pb8JObU9FQY5",
+      "Kiss the Rain - Billie Myers": "2LuRsh9I8Z1RrGVX6U1hmA",
+      "Stormy - Classics IV": "6Ke0OUb2c5b4cILs1bpPfW",
+      "Come Rain or Come Shine - Ray Charles": "2t2RfayWzI8wjJFTyKzZ88",
+      "I Can't Stand the Rain - Ann Peebles": "3MZmnfpDQQ6C0M7heDLo80",
+      "Purple Rain - Prince": "3wTXfFzSsn7KLQugH48ZWG",
+      "Under the Milky Way - The Church": "5HGVmjACb4B6ThtZGTEq03",
+      "Blackbird - The Beatles": "6wAeWfbIDx2b4st2Z1IpRE",
+      "Dust in the Wind - Kansas": "6zeE5tKyr8Nu882DQhhSQI",
+      "Ain't No Sunshine - Bill Withers": "3zF1UeRYFJZx9NKhf8qDRY",
+      "Someone Like You - Adele": "4m7rT3MufLx4v7gH0WsaEY",
+      "Creep - Radiohead": "4uY9V8Lo0C32kRvX9vMgB0",
+      "Hallelujah - Jeff Buckley": "3yQbeJ81g1t0MY3fMYZsEb",
+      "Mad World - Gary Jules": "2q7ka9UrjU5Zc5MZ1MV9D6",
+      "Everybody Hurts - R.E.M.": "2yCzZ85eVtNeKhQQw9W36A",
+      "Breathe Me - Sia": "7t9V2yfP2y5LQ5pkvnXr8M",
+      // Add other song mappings here
+    };
+
+    return songMapping[song] || null;
+  };
+
+  const handleSongClick = (index) => {
+    setSelectedSongIndex(index);
+    setLoadingSpotify(true);
+    // Simulate loading delay
+    setTimeout(() => setLoadingSpotify(false), 1000);
+  };
+
+  return (
+    <div className="max-w-3xl mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
+      <h1 className="text-3xl font-bold text-center text-black">Weather and Song Recommendation App</h1>
+      {weather ? (
+        <div className="mt-6 bg-gray-100 p-4 rounded-lg shadow-sm">
+          <h2 className="text-xl font-semibold text-black">Weather in {city}</h2>
+          <p className="mt-2 text-black"><strong>Temperature:</strong> {weather.main.temp} °C</p>
+          <p className="mt-2 text-black"><strong>Condition:</strong> {weather.weather[0].description}</p>
+          <p className="mt-2 text-black"><strong>Humidity:</strong> {weather.main.humidity}%</p>
+          <p className="mt-2 text-black"><strong>Wind Speed:</strong> {weather.wind.speed} m/s</p>
+        </div>
+      ) : (
+        <div className="mt-4 p-4 bg-blue-100 text-blue-800 rounded-lg">Loading weather data...</div>
+      )}
+
+      <div className="mt-8">
+        <h2 className="text-2xl font-semibold text-black">Recommended Songs</h2>
+        {songRecommendations.length > 0 ? (
+          <div className="flex flex-wrap mt-4">
+            {songRecommendations.map((song, index) => (
+              <div
+                key={index}
+                className="flex-1 m-2"
+              >
+                <div
+                  className={`p-4 rounded-lg shadow-md transition duration-200 ease-in-out 
+                  ${selectedSongIndex === index ? 'bg-blue-500 text-white' : 'bg-gray-200 hover:bg-gray-300 text-black'}`}
+                  onClick={() => handleSongClick(index)}
+                >
+                  {song}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="mt-4 text-black">No song recommendations available.</p>
+        )}
+
+        {selectedSongIndex !== null && spotifyTrackIds[selectedSongIndex] && (
+          <div className="mt-6 text-center">
+            <h3 className="text-lg font-semibold text-black">Listen on Spotify</h3>
+            {loadingSpotify ? (
+              <p className="mt-2 text-black">Loading Spotify player...</p>
+            ) : (
+              <iframe
+                src={`https://open.spotify.com/embed/track/${spotifyTrackIds[selectedSongIndex]}`}
+                width="300"
+                height="380"
+                frameBorder="0"
+                allow="encrypted-media"
+                title="Spotify Track"
+                className="mt-2 rounded-lg shadow-md"
+              ></iframe>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Weather;
+
+
+
+
+
+
+
+
+
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+
+const Weather = () => {
+  const [weather, setWeather] = useState(null);
+  const [isDaytime, setIsDaytime] = useState(null);
+  const [songRecommendations, setSongRecommendations] = useState([]);
+  const [spotifyTrackIds, setSpotifyTrackIds] = useState([]);
+  const [selectedSongIndex, setSelectedSongIndex] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [loadingSpotify, setLoadingSpotify] = useState(false);
+  const API_KEY = '34d531b0d791b6475ab886c9ce9eae2e';
+  const city = 'chennai';
+
+  useEffect(() => {
+    const fetchWeather = async () => {
+      try {
+        const response = await axios.get(
+          `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`
+        );
+        const data = response.data;
+        setWeather(data);
+
+        const currentTime = Date.now() / 1000;
+        const isDay = currentTime > data.sys.sunrise && currentTime < data.sys.sunset;
+        setIsDaytime(isDay);
+
+        const recommendations = getSongRecommendations(data.weather[0].description, isDay);
+        setSongRecommendations(recommendations);
+        setSpotifyTrackIds(recommendations.map(getSpotifyTrackId));
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching the weather data', error);
+        setLoading(false);
+      }
+    };
+
+    fetchWeather();
+  }, []);
+
+  const getSongRecommendations = (weatherDescription, isDaytime) => {
+    // Simplified for brevity
+  };
+
+  const getSpotifyTrackId = (song) => {
+    // Simplified for brevity
+  };
+
+  const handleSongClick = (index) => {
+    setSelectedSongIndex(index);
+    setLoadingSpotify(true);
+    setTimeout(() => setLoadingSpotify(false), 1000);
+  };
+
+  return (
+    <div className="container mx-auto p-6 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 text-white rounded-lg shadow-lg">
+      <h1 className="text-4xl font-bold text-center">Weather & Song Recommendations</h1>
+      {loading ? (
+        <div className="flex items-center justify-center mt-10">
+          <p className="text-2xl animate-spin">🌞</p>
+        </div>
+      ) : weather ? (
+        <div className="mt-6 p-6 rounded-lg bg-white bg-opacity-80 text-black shadow-md">
+          <h2 className="text-2xl font-semibold">Weather in {city}</h2>
+          <p><strong>Temperature:</strong> {weather.main.temp} °C</p>
+          <p><strong>Condition:</strong> {weather.weather[0].description}</p>
+          <p><strong>Humidity:</strong> {weather.main.humidity}%</p>
+          <p><strong>Wind Speed:</strong> {weather.wind.speed} m/s</p>
+        </div>
+      ) : (
+        <p className="mt-4 text-white">Error loading weather data.</p>
+      )}
+
+      <div className="mt-8">
+        <h2 className="text-3xl font-semibold">Recommended Songs</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+          {songRecommendations.length > 0 ? (
+            songRecommendations.map((song, index) => (
+              <div
+                key={index}
+                onClick={() => handleSongClick(index)}
+                className={`p-4 rounded-lg shadow-md transition transform hover:scale-105 duration-200 
+                  ${selectedSongIndex === index ? 'bg-purple-500 text-white' : 'bg-gray-200 text-black'}`}
+              >
+                {song}
+              </div>
+            ))
+          ) : (
+            <p className="col-span-full text-white">No song recommendations available.</p>
+          )}
+        </div>
+
+        {selectedSongIndex !== null && spotifyTrackIds[selectedSongIndex] && (
+          <div className="mt-6 text-center">
+            <h3 className="text-xl font-semibold">Listen on Spotify</h3>
+            {loadingSpotify ? (
+              <p className="mt-2">Loading Spotify player...</p>
+            ) : (
+              <iframe
+                src={`https://open.spotify.com/embed/track/${spotifyTrackIds[selectedSongIndex]}`}
+                width="300"
+                height="380"
+                frameBorder="0"
+                allow="encrypted-media"
+                title="Spotify Track"
+                className="mt-2 rounded-lg shadow-md"
+              ></iframe>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Weather;
+
+
+
+
+// ... existing imports ...
+
+const Traffic = () => {
+  // ... existing state and constants ...
+
+  return (
+    <div className="min-h-screen bg-gray-100 py-8">
+      <div className="container mx-auto px-4 max-w-6xl">
+        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-blue-700 to-indigo-600 text-white p-8">
+            <h2 className="text-4xl font-bold text-center mb-2">Traffic Monitor</h2>
+            <p className="text-center text-blue-100">Real-time traffic analysis in Chennai</p>
+          </div>
+
+          {/* Map Container */}
+          <div className="p-6">
+            <div 
+              ref={mapElement} 
+              className="map-container rounded-xl overflow-hidden shadow-lg border-4 border-gray-100" 
+              style={{ height: '500px', width: '100%' }} 
+            />
+          </div>
+
+          {/* Traffic Information Grid */}
+          <div className="grid md:grid-cols-2 gap-6 p-6">
+            {/* Current Location Panel */}
+            {currentTraffic && (
+              <div className="bg-white rounded-xl shadow-lg p-6 border border-blue-100 hover:shadow-xl transition-all duration-300">
+                <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                  <span className="material-icons mr-2">my_location</span>
+                  Current Location Traffic
+                </h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                    <span className="text-gray-600">Traffic Level</span>
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      currentTraffic.trafficLevel === 'High' ? 'bg-red-100 text-red-800' :
+                      currentTraffic.trafficLevel === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-green-100 text-green-800'
+                    }`}>
+                      {currentTraffic.trafficLevel}
+                    </span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b border-gray-100">
+                    <span className="text-gray-600">Current Speed</span>
+                    <span className="font-medium">{currentTraffic.currentSpeed} km/h</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b border-gray-100">
+                    <span className="text-gray-600">Congestion</span>
+                    <span className="font-medium">{currentTraffic.trafficRate}%</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* High Traffic Areas Panel */}
+            <div className="bg-white rounded-xl shadow-lg p-6 border border-blue-100 hover:shadow-xl transition-all duration-300">
+              <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                <span className="material-icons mr-2">traffic</span>
+                Congested Areas
+              </h3>
+              {highTrafficAreas.length > 0 ? (
+                <div className="space-y-4">
+                  {highTrafficAreas.map((area, index) => (
+                    <div key={index} className="p-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors duration-200">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm text-gray-500">Location {index + 1}</span>
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                          area.trafficLevel === 'High' ? 'bg-red-100 text-red-800' :
+                          area.trafficLevel === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-green-100 text-green-800'
+                        }`}>
+                          {area.trafficLevel}
+                        </span>
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        Congestion: {area.trafficRate}%
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex items-center justify-center p-6 bg-gray-50 rounded-lg">
+                  <span className="text-gray-500">No high traffic areas found</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Traffic;
+
+
+
+import React, { useEffect, useState, useRef } from 'react';
+import axios from 'axios';
+import tt from '@tomtom-international/web-sdk-maps';
+import '@tomtom-international/web-sdk-maps/dist/maps.css';
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
+import { motion } from 'framer-motion';
+import './Traffic.css';
+
+const Traffic = () => {
+  // ... existing state and constants ...
+
+  // Add new state for loading and error handling
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedArea, setSelectedArea] = useState(null);
+
+  // Add new function to handle area selection
+  const handleAreaClick = (area) => {
+    setSelectedArea(area);
+    map.flyTo({
+      center: [area.location.lng, area.location.lat],
+      zoom: 14,
+      duration: 2000
+    });
+  };
+
+  // Modify the return statement with enhanced UI
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-8">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="container mx-auto px-4 max-w-7xl"
+      >
+        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
+          {/* Enhanced Header */}
+          <div className="bg-gradient-to-r from-blue-800 via-blue-600 to-indigo-700 text-white p-10">
+            <motion.h2 
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              className="text-5xl font-bold text-center mb-3"
+            >
+              Chennai Traffic Monitor
+            </motion.h2>
+            <p className="text-center text-blue-100 text-lg">
+              Real-time traffic analysis and congestion monitoring
+            </p>
+          </div>
+
+          {/* Loading State */}
+          {isLoading && (
+            <div className="flex justify-center items-center p-8">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700"></div>
+            </div>
+          )}
+
+          {/* Error State */}
+          {error && (
+            <div className="bg-red-50 text-red-700 p-4 m-6 rounded-lg">
+              <p className="text-center">{error}</p>
+            </div>
+          )}
+
+          {/* Main Content */}
+          <div className="p-6 grid lg:grid-cols-3 gap-6">
+            {/* Left Panel - Traffic Statistics */}
+            <div className="lg:col-span-1 space-y-6">
+              {currentTraffic && (
+                <motion.div 
+                  initial={{ x: -20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  className="bg-white rounded-xl shadow-lg p-6 border border-blue-100"
+                >
+                  <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                    <span className="material-icons mr-2">my_location</span>
+                    Current Location
+                  </h3>
+                  
+                  <div className="w-48 h-48 mx-auto mb-6">
+                    <CircularProgressbar
+                      value={currentTraffic.trafficRate}
+                      text={`${currentTraffic.trafficRate}%`}
+                      styles={buildStyles({
+                        pathColor: `${
+                          currentTraffic.trafficLevel === 'High' ? '#ef4444' :
+                          currentTraffic.trafficLevel === 'Medium' ? '#f59e0b' :
+                          '#10b981'
+                        }`,
+                        textColor: '#374151',
+                        trailColor: '#f3f4f6'
+                      })}
+                    />
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                      <span className="text-gray-600">Speed</span>
+                      <span className="font-semibold">{currentTraffic.currentSpeed} km/h</span>
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                      <span className="text-gray-600">Status</span>
+                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        currentTraffic.trafficLevel === 'High' ? 'bg-red-100 text-red-800' :
+                        currentTraffic.trafficLevel === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-green-100 text-green-800'
+                      }`}>
+                        {currentTraffic.trafficLevel}
+                      </span>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </div>
+
+            {/* Center Panel - Map */}
+            <div className="lg:col-span-2">
+              <div 
+                ref={mapElement} 
+                className="map-container rounded-xl overflow-hidden shadow-lg border-4 border-gray-100" 
+                style={{ height: '600px', width: '100%' }} 
+              />
+            </div>
+          </div>
+
+          {/* Bottom Panel - Congested Areas */}
+          <div className="p-6 bg-gray-50">
+            <h3 className="text-2xl font-bold text-gray-800 mb-6">
+              Congested Areas Overview
+            </h3>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {highTrafficAreas.map((area, index) => (
+                <motion.div
+                  key={index}
+                  whileHover={{ scale: 1.02 }}
+                  onClick={() => handleAreaClick(area)}
+                  className="bg-white p-5 rounded-xl shadow-md cursor-pointer hover:shadow-lg transition-all duration-300"
+                >
+                  <div className="flex justify-between items-center mb-4">
+                    <span className="font-medium">Location {index + 1}</span>
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      area.trafficLevel === 'High' ? 'bg-red-100 text-red-800' :
+                      area.trafficLevel === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-green-100 text-green-800'
+                    }`}>
+                      {area.trafficLevel}
+                    </span>
+                  </div>
+                  <div className="space-y-2 text-sm text-gray-600">
+                    <p>Speed: {area.currentSpeed} km/h</p>
+                    <p>Congestion: {area.trafficRate}%</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+export default Traffic;

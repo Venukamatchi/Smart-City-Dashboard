@@ -1,0 +1,53 @@
+
+/* Weather.css */
+
+/* Fade animations */
+.fade-enter {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 300ms ease-in-out, transform 300ms ease-in-out;
+}
+
+.fade-exit {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 300ms ease-in-out, transform 300ms ease-in-out;
+}
+
+/* Background gradient */
+div.bg-gradient-to-br:nth-child(1) {
+  background: linear-gradient(135deg, rgba(31, 41, 55, 1) 0%, rgba(17, 24, 39, 1) 100%);
+}
+
+div.p-2:nth-child(1){
+  font-size: 0.9rem;
+}
+
+.grid-cols-5{
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+
+}
+
+h3.font-bold{
+  
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.py-12{
+  round-corner: 1.5rem;
+}
