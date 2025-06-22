@@ -17,7 +17,6 @@ This dashboard is designed to make key city-related information easily accessibl
 🎥 **See the Smart City Dashboard in action!**  
 
 Watch the full demo:
-https://github-production-user-asset-6210df.s3.amazonaws.com/176712515/384489842-5f2b20e8-fdb0-4cd8-8922-d2bc7583b813.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20250622%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250622T123323Z&X-Amz-Expires=300&X-Amz-Signature=45edfa67461b610b4760be94c546fa0c3fbe1aff604b51df4002350693d658e3&X-Amz-SignedHeaders=host
 [![Smart City Dashboard Demo]](https://github.com/user-attachments/assets/5f2b20e8-fdb0-4cd8-8922-d2bc7583b813)
 
 ## Thought
